@@ -3,6 +3,8 @@
 Utility functions to convert between various color spaces in GLSL.
 Exported as modules using [`glslify`](https://github.com/glslify/glslify).
 
+Experimental, not yet ready for consumption.
+
 ## Supported Conversions
 
 **d** = directly implemented
@@ -21,6 +23,12 @@ Exported as modules using [`glslify`](https://github.com/glslify/glslify).
 | **HSL**   |  d  |  x   |  x  |  x  |  x  |     |  x  |  d  |  x  |   x   |
 | **HCY**   |  d  |  x   |  x  |  x  |  x  |     |  x  |  x  |  d  |   x   |
 | **YCbCr** |  d  |  x   |  x  |  x  |  x  |     |  x  |  x  |  x  |   d   |
+
+## To-do
+
+- Fix bugs:
+    - `rgb != hsl_to_rgb(rgb_to_hsl(rgb))`
+- Divide functions into files for lighter `glslify` imports.
 
 ## See Also
 
