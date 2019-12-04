@@ -1,8 +1,9 @@
-# GLSL-Color-Spaces
-Utility functions to convert between various color spaces in GLSL
+# `glsl-color-spaces`
 
+Utility functions to convert between various color spaces in GLSL.
+Exported as modules using [`glslify`](https://github.com/glslify/glslify).
 
-## Supported conversions
+## Supported Conversions
 
 **d** = directly implemented
 
@@ -21,3 +22,6 @@ Utility functions to convert between various color spaces in GLSL
 | **HCY**   |  d  |  x   |  x  |  x  |  x  |     |  x  |  x  |  d  |   x   |
 | **YCbCr** |  d  |  x   |  x  |  x  |  x  |     |  x  |  x  |  x  |   d   |
 
+## See Also
+
+- [`glslify`](https://github.com/glslify/glslify).

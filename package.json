@@ -1,0 +1,10 @@
+{
+  "name": "glsl-color-spaces",
+  "version": "1.0.0",
+  "description": "Utility functions to convert between various color spaces in GLSL.",
+  "main": "index.js",
+  "repository": "git@github.com:keeffEoghan/GLSL-Color-Spaces.git",
+  "author": "Tobias Springer IT Solutions <info@tobspr.com> (http://tobspr.com/)",
+  "license": "MIT",
+  "contributors": ["Eoghan O'Keeffe <epok.tech@gmail.com> (https://epok.tech)"]
+}
