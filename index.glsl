@@ -232,7 +232,7 @@ vec3 rgb_to_hsv(vec3 rgb) {
 // Converts from linear rgb to HSL
 vec3 rgb_to_hsl(vec3 rgb) {
     vec3 hcv = rgb_to_hcv(rgb);
-    float l = hcv.z-hcv.y*0.5;
+    float l = hcv.z-(hcv.y*0.5);
     float s = hcv.y/(1.0-abs((l*2.0)-1.0)+HSL_EPSILON);
 
     return vec3(hcv.x, s, l);
