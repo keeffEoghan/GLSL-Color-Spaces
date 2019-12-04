@@ -38,7 +38,7 @@ https://www.fourcc.org/fccyvrgb.php
 
 // Define saturation macro, if not already user-defined
 #ifndef saturate
-    #define saturate(v) clamp(v, 0, 1)
+    #define saturate(v) clamp(v, 0.0, 1.0)
 #endif
 
 // Constants
@@ -169,24 +169,24 @@ vec3 xyY_to_rgb(vec3 xyY) {
 // Converts a value from linear RGB to HCV (Hue, Chroma, Value)
 vec3 rgb_to_hcv(vec3 rgb) {
     // Based on work by Sam Hocevar and Emil Persson
-    vec4 P = ((rgb.g < rgb.b)? vec4(rgb.bg, -1.0, 2.0/3.0)
+    vec4 p = ((rgb.g < rgb.b)? vec4(rgb.bg, -1.0, 2.0/3.0)
         :   vec4(rgb.gb, 0.0, -1.0/3.0));
 
-    vec4 Q = ((rgb.r < P.x)? vec4(P.xyw, rgb.r) : vec4(rgb.r, P.yzx));
-    float C = Q.x-min(Q.w, Q.y);
-    float H = abs((Q.w-Q.y)/(6*C+HCV_EPSILON)+Q.z);
+    vec4 q = ((rgb.r < p.x)? vec4(p.xyw, rgb.r) : vec4(rgb.r, p.yzx));
+    float c = q.x-min(q.w, q.y);
+    float h = abs((q.w-q.y)/((6.0*c)+HCV_EPSILON)+q.z);
 
-    return vec3(H, C, Q.x);
+    return vec3(h, c, q.x);
 }
 #pragma glslify: export(rgb_to_hcv);
 
 // Converts from pure Hue to linear RGB
 vec3 hue_to_rgb(float hue) {
-    float R = abs((hue*6)-3)-1;
-    float G = 2-abs((hue*6)-2);
-    float B = 2-abs((hue*6)-4);
-
-    return saturate(vec3(R,G,B));
+    return saturate(vec3(
+        abs((hue*6.0)-3.0)-1.0,
+        2.0-abs((hue*6.0)-2.0),
+        2.0-abs((hue*6.0)-4.0)
+    ));
 }
 #pragma glslify: export(hue_to_rgb);
 
@@ -201,64 +201,64 @@ vec3 hsv_to_rgb(vec3 hsv) {
 // Converts from HSL to linear RGB
 vec3 hsl_to_rgb(vec3 hsl) {
     vec3 rgb = hue_to_rgb(hsl.x);
-    float C = (1-abs((2*hsl.z)-1))*hsl.y;
+    float c = (1.0-abs((2.0*hsl.z)-1.0))*hsl.y;
 
-    return ((rgb-0.5)*C)+hsl.z;
+    return ((rgb-0.5)*c)+hsl.z;
 }
 #pragma glslify: export(hsl_to_rgb);
 
 // Converts from HCY to linear RGB
 vec3 hcy_to_rgb(vec3 hcy) {
-    const vec3 HCYwts = vec3(0.299, 0.587, 0.114);
-    vec3 RGB = hue_to_rgb(hcy.x);
-    float Z = dot(RGB, HCYwts);
+    const vec3 hcyWts = vec3(0.299, 0.587, 0.114);
+    vec3 rgb = hue_to_rgb(hcy.x);
+    float z = dot(rgb, hcyWts);
 
-    if(hcy.z < Z) {
-        hcy.y *= hcy.z/Z;
+    if(hcy.z < z) {
+        hcy.y *= hcy.z/z;
     }
-    else if(Z < 1) {
-        hcy.y *= (1-hcy.z)/(1-Z);
+    else if(z < 1.0) {
+        hcy.y *= (1.0-hcy.z)/(1.0-z);
     }
 
-    return ((RGB-Z)*hcy.y)+hcy.z;
+    return ((rgb-z)*hcy.y)+hcy.z;
 }
 #pragma glslify: export(hcy_to_rgb);
 
 // Converts from linear RGB to HSV
 vec3 rgb_to_hsv(vec3 rgb) {
-    vec3 HCV = rgb_to_hcv(rgb);
-    float S = HCV.y/(HCV.z+HCV_EPSILON);
+    vec3 hcv = rgb_to_hcv(rgb);
+    float s = hcv.y/(hcv.z+HCV_EPSILON);
 
-    return vec3(HCV.x, S, HCV.z);
+    return vec3(hcv.x, s, hcv.z);
 }
 #pragma glslify: export(rgb_to_hsv);
 
 // Converts from linear rgb to HSL
 vec3 rgb_to_hsl(vec3 rgb) {
-    vec3 HCV = rgb_to_hcv(rgb);
-    float L = HCV.z-HCV.y*0.5;
-    float S = HCV.y/(1-abs((L*2)-1)+HSL_EPSILON);
+    vec3 hcv = rgb_to_hcv(rgb);
+    float l = hcv.z-hcv.y*0.5;
+    float s = hcv.y/(1.0-abs((l*2.0)-1.0)+HSL_EPSILON);
 
-    return vec3(HCV.x, S, L);
+    return vec3(hcv.x, s, l);
 }
 #pragma glslify: export(rgb_to_hsl);
 
 // Converts from rgb to hcy (Hue, Chroma, Luminance)
 vec3 rgb_to_hcy(vec3 rgb) {
-    const vec3 HCYwts = vec3(0.299, 0.587, 0.114);
+    const vec3 hcyWts = vec3(0.299, 0.587, 0.114);
     // Corrected by David Schaeffer
-    vec3 HCV = rgb_to_hcv(rgb);
-    float Y = dot(rgb, HCYwts);
-    float Z = dot(hue_to_rgb(HCV.x), HCYwts);
+    vec3 hcv = rgb_to_hcv(rgb);
+    float y = dot(rgb, hcyWts);
+    float z = dot(hue_to_rgb(hcv.x), hcyWts);
 
-    if(Y < Z) {
-      HCV.y *= Z/(HCY_EPSILON+Y);
+    if(y < z) {
+      hcv.y *= z/(HCY_EPSILON+y);
     }
     else {
-      HCV.y *= (1-Z)/(HCY_EPSILON+1-Y);
+      hcv.y *= (1.0-z)/(HCY_EPSILON+1.0-y);
     }
 
-    return vec3(HCV.x, HCV.y, Y);
+    return vec3(hcv.x, hcv.y, y);
 }
 #pragma glslify: export(rgb_to_hcy);
 
