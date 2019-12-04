@@ -86,14 +86,14 @@ vec3 srgb_to_rgb_approx(vec3 srgb) {
 
 // Converts a single linear channel to srgb
 float linear_to_srgb(float channel) {
-    return ((channel <= 0.0031308)? 12.92*channel;
+    return ((channel <= 0.0031308)? 12.92*channel
         :   (1.0+SRGB_ALPHA)*pow(channel, 1.0/2.4)-SRGB_ALPHA);
 }
 #pragma glslify: export(linear_to_srgb);
 
 // Converts a single srgb channel to rgb
 float srgb_to_linear(float channel) {
-    return ((channel <= 0.04045)? channel/12.92;
+    return ((channel <= 0.04045)? channel/12.92
         :   pow((channel+SRGB_ALPHA)/(1.0+SRGB_ALPHA), 2.4));
 }
 #pragma glslify: export(srgb_to_linear);
